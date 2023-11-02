@@ -12,7 +12,8 @@ AdminJS.registerAdapter(AdminJSMongoose)
 const app = express();
 // Very basic configuration of AdminJS.
 const adminJs = new AdminJS({
-    resources: [{resource: Influencer},
+    resources: [{
+        resource: Influencer},
         {
             resource: Users,
             options: {
@@ -31,21 +32,22 @@ const adminJs = new AdminJS({
                        },
                    },
                },
-            // actions: {
-            //         new: {
-            //             // Hash the password.
-            //             before: async (request: ActionRequest) => {
-            //                 if(request?.payload?.password) {
-            //                     request.payload = {
-            //                         …request.payload, 
-            //                         encryptedPassword: await bcrypt.hash(request.payload.password, 10),
-            //                         password: undefined,
-            //                     }
-            //                 }
-            //                 return request
-            //             },
-            //         }
-            //     }
+            actions: {
+                new: {
+                    // Hash the password.
+                    before: async (request) => {
+                        if (request.payload.password) {
+                            request.payload = {
+                                ...request.payload,
+                                encryptedPassword: await bcrypt.hash(request.payload.password, 10),
+                                password: undefined,
+                            };
+                        }
+                        return request;
+                    },
+                },
+                
+                }
             }
         },
         
@@ -76,6 +78,7 @@ const router = AdminJSExpress.buildAuthenticatedRouter(
         saveUninitialized: true,
     }
 );
+// const router = AdminJSExpress.buildRouter(adminJs);
 
 app.use(adminJs.options.rootPath, router);
 
@@ -83,7 +86,7 @@ app.use(adminJs.options.rootPath, router);
 // Run the server.
 const run = async () => {
     await mongoose.connect('mongodb+srv://kalyankarrahul500:Rahul1609@influ-mrkt.6qatieb.mongodb.net/', {useNewUrlParser: true});
-    await app.listen(8080, () => console.log(`Example app listening on port 8080!🚀`));
+    await app.listen(8080, () => console.log(`App listening on port 8080!🚀`));
 };
 
 run();
